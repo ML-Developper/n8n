@@ -1,0 +1,453 @@
+{
+  "name": "pc-status",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Tu es un expert en monitoring serveur et système pour utilisateurs non techniques.\n\n⚠️ RÈGLE ABSOLUE :\nTu DOIS lire uniquement les données fournies.\nTu ne dois JAMAIS supposer, deviner ou arrondir.\nTu dois analyser UNIQUEMENT les champs présents dans le JSON.\n\nSi une donnée indique un problème (fail, 0 success, taux faible, zone orange/red), tu DOIS le signaler.\n\n---\n\n📥 DONNÉES À ANALYSER :\n{{ JSON.stringify($json) }}\n\n---\n\n📦 STRUCTURE DES DONNÉES À UTILISER :\nTu dois obligatoirement analyser :\n\n🌐 Serveur :\n- server.url\n- server.status\n- summary.success\n- summary.fail\n- summary.taux_reussite\n- performance.temps_moyen\n- performance.rps\n\n🖥 Système :\n- pc_status.cpu.value / zone\n- pc_status.ram.value / zone\n- pc_status.disk.value / zone\n- pc_status.temperature.value / zone\n\n---\n\n📊 RÈGLES DE DÉCISION (OBLIGATOIRES) :\n\n- summary.success = 0 → 🔴 serveur DOWN\n- summary.fail > 0 → problème serveur\n- summary.taux_reussite < 80% → problème\n- server.status = \"Serveur faible\" ou \"Instable\" → problème serveur\n- CPU/RAM/DISK/TEMP en orange ou red → problème système\n\n---\n\n📌 IMPORTANT :\nTu dois comparer les chiffres EXACTS.\nNe jamais dire \"tout va bien\" si une règle ci-dessus est vraie.\n\n---\n\n📊 FORMAT OBLIGATOIRE :\n\n🌐 Serveur :\n🟢 OK / 🟡 Problème / 🔴 En panne\n\n🖥 Système :\n🟢 OK / 🟡 À surveiller / 🔴 Problème\n\n📊 Analyse réelle :\nExplique uniquement ce que montrent les données exactes\n\n⚠️ Problème détecté :\n- liste exacte des problèmes trouvés\n- si aucun : \"Aucun problème détecté\"\n\n🔧 Solution :\n- actions simples et concrètes\n\n🚀 Conseil :\n1 phrase utile basée sur les données\n\n📌 Résumé :\n1 phrase très simple basée sur les résultats réels\n\n---\n\n🚫 INTERDICTION :\n- ne pas ignorer success/fail\n- ne pas inventer de données\n- ne pas généraliser\n- ne pas dire \"OK\" si un indicateur est mauvais\n\n---\n\nSTYLE :\n- simple\n- factuel\n- basé uniquement sur les champs listés",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -416,
+        -608
+      ],
+      "id": "c689e3a4-1ced-4af6-ac27-6db2788865cf",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -432
+      ],
+      "id": "420fffc8-4189-4400-8ea4-8ec9a33054fc",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "lHUTogyVilWXNZZU",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "marwenlamiri89@gmail.com",
+        "subject": "🚨 Rapport Server automatique",
+        "message": "=<hr>\n\n<h2>🌐 Rapport de test serveur</h2>\n\n<b>Serveur :</b>\n{{ $('Code in JavaScript').first().json.server.url }}<br>\n\n<b>État :</b>\n{{ $('Code in JavaScript').first().json.server.status }}<br>\n\n<hr>\n\n<h3>📊 Résultat du test</h3>\n\n<b>Succès :</b>\n{{ $('Code in JavaScript').first().json.summary.success }}<br>\n\n<b>Échecs :</b>\n{{ $('Code in JavaScript').first().json.summary.fail }}<br>\n\n<b>Taux de réussite :</b>\n{{ $('Code in JavaScript').first().json.summary.taux_reussite }}<br>\n\n<br>\n\n<b>⏱ Temps moyen :</b>\n{{ $('Code in JavaScript').first().json.performance.temps_moyen }}<br>\n\n<b>⚡ Performance :</b>\n{{ $('Code in JavaScript').first().json.performance.rps }} req/s<br>\n\n<hr>\n\n<h3>🖥 État du système</h3>\n\n<b>CPU :</b>\n{{ $('Code in JavaScript').first().json.pc_status.cpu.value }}\n({{ $('Code in JavaScript').first().json.pc_status.cpu.zone }})<br>\n\n<b>RAM :</b>\n{{ $('Code in JavaScript').first().json.pc_status.ram.value }}\n({{ $('Code in JavaScript').first().json.pc_status.ram.zone }})<br>\n\n<b>Disque :</b>\n{{ $('Code in JavaScript').first().json.pc_status.disk.value }}\n({{ $('Code in JavaScript').first().json.pc_status.disk.zone }})<br>\n\n<b>Température :</b>\n{{ $('Code in JavaScript').first().json.pc_status.temperature.value }}\n({{ $('Code in JavaScript').first().json.pc_status.temperature.zone }})<br>\n\n<hr>\n\n<h3>🧠 Analyse IA</h3>\n\n<pre style=\"white-space: pre-wrap;\">\n{{ $('Basic LLM Chain1').first().json.text }}\n</pre>\n\n<hr>\n\n<h3>📌 Résumé</h3>\n\n{{ $('Code in JavaScript').first().json.report }}\n\n<hr>\n\n📋 <b>Historique :</b>\n<a href=\"http://localhost/page_server/\" target=\"_blank\">http://localhost/page_server/</a>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        -528
+      ],
+      "id": "e35c85c0-a80b-400d-b756-6d1dec1f8aee",
+      "name": "Send a message1",
+      "webhookId": "14db152e-5a7e-4a37-aa6c-77980ac7f8c0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tXMPF8E3xEETQuDi",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/marwen/Desktop/response_server/main.py",
+        "cwd": "/response_server"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        -608
+      ],
+      "id": "0e45f655-c058-4c3a-a5d3-e853196c919e",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPassword": {
+          "id": "Hoe4qmN71x2tjNxy",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\n// =========================\n// stdout extraction\n// =========================\nconst stdout = input.stdout || \"\";\nconst date = new Date().toISOString();\n\n// =========================\n// parse résultat serveur\n// =========================\nlet extracted = {};\n\n// parse PC status\nlet data = {};\n\ntry {\n  const serverMatch = stdout.match(/Résultat final :\\n(\\{[\\s\\S]*?\\})\\n\\n/);\n\n  if (serverMatch) {\n    extracted = eval(\"(\" + serverMatch[1] + \")\");\n  }\n\n  const pcMatch = stdout.match(/DATA COMPLETE:\\n(\\{[\\s\\S]*?\\})\\n(?:✓|⚠|STATUS)/);\n\n  if (pcMatch) {\n    data = eval(\"(\" + pcMatch[1] + \")\");\n  }\n\n} catch (e) {\n  extracted = { error: \"parse failed\" };\n  data = {};\n}\n\n// =========================\n// sécurité input\n// =========================\nconst body = extracted || {};\n\n// =========================\n// variables directes\n// =========================\nconst url = body.serveur;\nconst success = body.success;\nconst fail = Number(body.fail);\nconst taux = body.taux_reussite;\nconst temps_moyen = body.temps_moyen;\nconst rps = body.capacite_rps;\nconst etat = body.etat;\n\n// =========================\n// helper PC\n// =========================\nfunction has_error(data) {\n  if (!data || !data.cpu) return false;\n\n  return [\"cpu\", \"ram\", \"disk\", \"temperature\"].some(\n    key =>\n      data[key] &&\n      [\"orange\", \"red\"].includes(data[key].zone)\n  );\n}\n\n// =========================\n// OUTPUT FINAL\n// =========================\nreturn [\n  {\n    json: {\n      date: date,\n\n      server: {\n        url,\n        status: etat\n      },\n\n      summary: {\n        success,\n        fail,\n        taux_reussite: `${taux}%`\n      },\n\n      performance: {\n        temps_moyen: `${temps_moyen}s`,\n        rps\n      },\n\n      report: `SUCCESS ${success} / FAIL ${fail}`,\n\n      interpretation: {\n        message:\n          etat === \"Très stable\"\n            ? \"Serveur en bonne santé\"\n            : \"Problème détecté sur le serveur\",\n\n        advice:\n          fail > 0\n            ? \"Vérifier la stabilité réseau ou backend\"\n            : \"Aucune action requise\"\n      },\n\n      pc_status: data,\n\n      system_report: {\n        alert: has_error(data),\n\n        message:\n          has_error(data)\n            ? \"Ressource système en alerte\"\n            : \"Machine stable\",\n\n        advice:\n          has_error(data)\n            ? \"Vérifier CPU / RAM / disque / température\"\n            : \"Aucune action requise\"\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        -608
+      ],
+      "id": "18106c6b-9423-49b4-b633-4bf8420b5d51",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "amount": 15,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        -480
+      ],
+      "id": "48e0a43d-cf8c-4f66-b079-79f5a3592584",
+      "name": "Wait",
+      "webhookId": "da27576e-c450-494a-a452-84e21cd0394e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5aebe485-82b6-46bc-b80e-1e160f186085",
+              "leftValue": "={{ Number($('Code in JavaScript').item.json.summary.fail) > 0 }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "460d7042-d0f7-43b9-885f-f765e9e5b994",
+              "leftValue": "={{ $('Code in JavaScript').item.json.performance.temps_moyen > 1}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "166654db-4c08-48b2-9cb8-447e0e75d77d",
+              "leftValue": "={{ $('Code in JavaScript').item.json.pc_status.cpu.zone == \"green\" }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "8bd74f8a-b8d4-41ed-93bb-3b46a822e4a9",
+              "leftValue": "={{ $('Code in JavaScript').item.json.pc_status.ram.zone == \"green\"}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c8e357b1-0253-4e68-84a1-a356eb9aba81",
+              "leftValue": "={{ $('Code in JavaScript').item.json.pc_status.disk.zone == \"green\"}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "86ac28ce-a3ec-4fcf-9bf1-e1a89c3e0aec",
+              "leftValue": "={{ $('Code in JavaScript').item.json.pc_status.temperature.zone == \"green\"}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -96,
+        -608
+      ],
+      "id": "f73bc3cc-b632-40aa-8187-b84920332920",
+      "name": "If",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        -256
+      ],
+      "id": "87bc3af6-d22b-44f5-a899-4d1fc84778ca",
+      "name": "Wait2",
+      "webhookId": "da27576e-c450-494a-a452-84e21cd0394e"
+    },
+    {
+      "parameters": {
+        "chatId": "5750083056",
+        "text": "=🌐 Rapport de test serveur\n\nServeur : {{ $('Code in JavaScript').first().json.server.url }}\nÉtat : {{ $('Code in JavaScript').first().json.server.status }}\n\n📊 Résultat du test\nSuccès : {{ $('Code in JavaScript').first().json.summary.success }}\nÉchecs : {{ $('Code in JavaScript').first().json.summary.fail }}\nTaux de réussite : {{ $('Code in JavaScript').first().json.summary.taux_reussite }}\n\n⏱ Temps moyen : {{ $('Code in JavaScript').first().json.performance.temps_moyen }}\n⚡ Performance : {{ $('Code in JavaScript').first().json.performance.rps }} req/s\n\n🖥 Système (PC)\nCPU : {{ $('Code in JavaScript').first().json.pc_status.cpu.value }} ({{ $('Code in JavaScript').first().json.pc_status.cpu.zone }})\nRAM : {{ $('Code in JavaScript').first().json.pc_status.ram.value }} ({{ $('Code in JavaScript').first().json.pc_status.ram.zone }})\nDisque : {{ $('Code in JavaScript').first().json.pc_status.disk.value }} ({{ $('Code in JavaScript').first().json.pc_status.disk.zone }})\nTempérature : {{ $('Code in JavaScript').first().json.pc_status.temperature.value }} ({{ $('Code in JavaScript').first().json.pc_status.temperature.zone }})\n\n🧠 Analyse IA\n{{ $('Basic LLM Chain1').first().json.text }}\n\n📌 Résumé\n{{ $('Code in JavaScript').first().json.report }}\n\n📋 Historique\nhttp://localhost/pageserver",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        -672
+      ],
+      "id": "4040a523-0807-450c-8e70-a340d43940b2",
+      "name": "Send a text message",
+      "webhookId": "15823ccb-c565-4a50-b61e-12f947cc5cdf",
+      "credentials": {
+        "telegramApi": {
+          "id": "t5OLCPrcE0jmU9s0",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "idtestServer",
+          "mode": "list",
+          "cachedResultName": "idtestServer"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "serveur",
+              "value": "={{ $('Code in JavaScript').item.json.server.url }}"
+            },
+            {
+              "column": "taux_reussite",
+              "value": "={{ $('Code in JavaScript').item.json.summary.taux_reussite }}"
+            },
+            {
+              "column": "temps_moyen",
+              "value": "={{ $('Code in JavaScript').item.json.performance.temps_moyen }}"
+            },
+            {
+              "column": "resume",
+              "value": "={{ $('Code in JavaScript').item.json.report }}"
+            },
+            {
+              "column": "date",
+              "value": "={{ $('Code in JavaScript').item.json.date }}"
+            },
+            {
+              "column": "host",
+              "value": "={{ $('Code in JavaScript').item.json.pc_status.host }}"
+            },
+            {
+              "column": "cpu",
+              "value": "={{ $('Code in JavaScript').item.json.pc_status.cpu.value }}"
+            },
+            {
+              "column": "ram",
+              "value": "={{ $('Code in JavaScript').item.json.pc_status.ram.value }}"
+            },
+            {
+              "column": "disk",
+              "value": "={{ $('Code in JavaScript').item.json.pc_status.disk.value }}"
+            },
+            {
+              "column": "temperature",
+              "value": "={{ $('Code in JavaScript').item.json.pc_status.temperature.value }}"
+            },
+            {
+              "column": "etat",
+              "value": "={{ $('Code in JavaScript').item.json.server.status }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        512,
+        -864
+      ],
+      "id": "d9c65281-03d8-4d68-b342-95bdb519c459",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "mySql": {
+          "id": "eSQyL2ULGMAHjmFc",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        -688
+      ],
+      "id": "6e64921c-74ad-427c-81ae-8ac37c22f731",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "357ebf22-9f8e-4054-9ba2-d6e8d15ea571",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "474ff41be5929954dc1481e11296e4008bdc18f10f4540949ba2736e032d255c"
+  },
+  "id": "En28JtGqTDVXEBGg",
+  "tags": []
+}

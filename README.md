@@ -80,3 +80,23 @@ A comprehensive server and machine monitoring system with automatic failure dete
 │ │ (History) │ │
 │ └─────────────────┘ │
 └─────────────────────────────────────────────────────────────────────┘
+
+### 🤖 DATA BASE
+
+CREATE DATABASE alertserver;
+USE alertserver;
+
+CREATE TABLE idtestServer (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    serveur VARCHAR(255) NOT NULL,
+    etat VARCHAR(255) NOT NULL,
+    date VARCHAR(255) NOT NULL,
+    taux_reussite VARCHAR(255) NOT NULL,
+    temps_moyen VARCHAR(255) NOT NULL,
+    host VARCHAR(255) NOT NULL,
+    cpu VARCHAR(255) NOT NULL,
+    ram VARCHAR(255) NOT NULL,
+    disk VARCHAR(255) NOT NULL,
+    temperature VARCHAR(255) NOT NULL,
+    resume VARCHAR(255) NOT NULL
+);
